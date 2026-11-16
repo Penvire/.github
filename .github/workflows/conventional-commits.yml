@@ -1,0 +1,60 @@
+# Reusable check: every commit message (and the PR title, which becomes the
+# merge commit title) must follow Conventional Commits 1.0.0.
+name: Conventional Commits
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Conventional Commits
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Check commit messages
+        env:
+          EVENT: ${{ github.event_name }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD: ${{ github.event.pull_request.head.sha || github.event.after }}
+        run: |
+          set -euo pipefail
+          pattern='^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\([[:alnum:]._/-]+\))?!?: [^[:space:]].*$'
+          failed=0
+
+          check() {
+            if [[ "$1" =~ $pattern ]]; then
+              echo "ok: $1"
+            else
+              echo "::error::Not a Conventional Commit: $1"
+              failed=1
+            fi
+          }
+
+          if [[ "$EVENT" == pull_request* ]]; then
+            check "$PR_TITLE"
+          fi
+
+          # A new branch has no "before" commit; check only its tip then.
+          if [[ "$BASE" =~ ^0+$ ]]; then
+            range=(-1 "$HEAD")
+          else
+            range=("$BASE..$HEAD")
+          fi
+
+          # Merge commits come from GitHub's merge button and use the checked PR title.
+          while IFS= read -r subject; do
+            check "$subject"
+          done < <(git log --no-merges --format=%s "${range[@]}")
+
+          if (( failed )); then
+            echo "::error::Use 'type(scope): description', e.g. 'feat(identity): add token exchange'. Types: build chore ci docs feat fix perf refactor revert style test."
+            exit 1
+          fi
