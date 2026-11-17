@@ -16,7 +16,7 @@ An open-source platform for penetration testing consultancies, covering the day-
 | --- | --- | --- |
 | Contracts (OpenAPI, AsyncAPI, Avro) | [penvire-contracts](https://github.com/Penvire/penvire-contracts) | [penvire-lab-contracts](https://github.com/Penvire/penvire-lab-contracts) |
 | Backend services | [penvire-backend](https://github.com/Penvire/penvire-backend) | [penvire-lab-backend](https://github.com/Penvire/penvire-lab-backend) |
-| Web UI and clients | [penvire-client](https://github.com/Penvire/penvire-client) | [penvire-lab-client](https://github.com/Penvire/penvire-lab-client) |
+| Clients (web, desktop, iOS, Android) | [penvire-clients](https://github.com/Penvire/penvire-clients) | [penvire-lab-clients](https://github.com/Penvire/penvire-lab-clients) |
 | Documentation | [penvire-docs](https://github.com/Penvire/penvire-docs) | in penvire-lab-backend |
 
 Contracts are licensed under Apache-2.0, backend and clients under AGPL-3.0, and documentation under CC-BY-4.0.
